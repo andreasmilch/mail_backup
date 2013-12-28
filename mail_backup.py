@@ -10,6 +10,8 @@ import pickle
 import re
 import time
 
+import pdb
+
 # Constant variables
 list_response_pattern = re.compile(r'\((?P<flags>.*?)\) "(?P<delimiter>.*)" (?P<name>.*)')
 config_loc = "config.ini"
@@ -45,6 +47,7 @@ def walk_mail(mail):
         
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--clean", help="clean directory from output files", action="store_true")
+parser.add_argument("-p", "--password", help="use password, ask for password", nargs="?", const=True)
 parser.add_argument("-v", "--verbose", help="print a report on the console", action="store_true")
 parser.add_argument("-w", "--wizard", help="wizard for config file", action="store_true")
 args = parser.parse_args()
@@ -55,8 +58,14 @@ if os.path.exists(config_loc):
 if not args.wizard:
     if not "user" in config["SERVER"]:
         config["SERVER"]["user"] = input("Enter imap username:")
-    if not "pwd" in config["SERVER"]:
-        config["SERVER"]["pwd"] = getpass.getpass("Enter imap password:")
+    if args.password == True:
+        pwd = getpass.getpass("Enter imap password:")
+    elif args.password == None:
+        if not "pwd" in config["SERVER"]:
+            config["SERVER"]["pwd"] = getpass.getpass("Enter imap password:")
+        pwd = config["SERVER"]["pwd"]
+    else:
+        pwd = args.password
     if not "server" in config["SERVER"]:
         config["SERVER"]["server"] = input("Enter server address:")
     if not "port" in config["SERVER"]:
@@ -82,6 +91,7 @@ saved = []
 skipped = []
 hashes = []
 new_hashes = []
+pwd = ""
 
 try:
     with open(config["SERVER"]["already_saved"], "rb") as f:
@@ -94,7 +104,7 @@ mbox.lock()
 try:
     
     m = imaplib.IMAP4_SSL(config["SERVER"]["server"], config["SERVER"].getint("port"))
-    m.login(config["SERVER"]["user"], config["SERVER"]["pwd"])
+    m.login(config["SERVER"]["user"], pwd)
     if "mailbox" not in config["SERVER"]:
         print("Choose mailbox to archieve: ")
         resp, mailboxlist = m.list()

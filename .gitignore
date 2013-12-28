@@ -3,3 +3,6 @@
 
 # Config
 config.ini
+
+# Backups
+*.mbox
