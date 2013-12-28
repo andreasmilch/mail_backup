@@ -66,7 +66,6 @@ if args.clean:
             os.remove(config["SERVER"]["mbox_name"]+".lock")
     exit()
 
-report_loc = "report.txt"
 saved = []
 skipped = []
 hashes = []

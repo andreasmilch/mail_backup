@@ -1,0 +1,5 @@
+# Logs
+*.log
+
+# Config
+config.ini
