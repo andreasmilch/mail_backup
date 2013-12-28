@@ -1,7 +1,20 @@
-import argparse, hashlib, re, configparser, pickle, email, mailbox, getpass, imaplib, os, time
+import argparse
+import configparser
+import email
+import getpass
+import hashlib
+import imaplib
+import mailbox
+import os
+import pickle
+import re
+import time
 
+# Constant variables
 list_response_pattern = re.compile(r'\((?P<flags>.*?)\) "(?P<delimiter>.*)" (?P<name>.*)')
+config_loc = "config.ini"
 
+# Functions
 def parse_list_response(line):
     line = line.decode()
     flags, delimiter, mailbox_name = list_response_pattern.match(line).groups()
@@ -37,7 +50,6 @@ parser.add_argument("-w", "--wizard", help="wizard for config file", action="sto
 args = parser.parse_args()
 
 config = configparser.ConfigParser()
-config_loc = "config.ini"
 if os.path.exists(config_loc):
     config.read(config_loc)
 if not args.wizard:
